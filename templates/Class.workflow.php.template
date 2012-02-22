@@ -1,0 +1,32 @@
+<?php
+
+class $workflowName extends WDoc
+{
+    public $attrPrefix =
+    public $firstState = self::E1;
+    public $viewlist = "none";
+
+    /* States */
+    const E1 =
+
+    /* Transitions */
+    const T1 =
+
+
+    public $stateactivity = array(
+
+    );
+
+
+    public $transitions = array(
+
+    );
+
+    public $cycle = array(
+
+    );
+
+
+
+}
+?>
