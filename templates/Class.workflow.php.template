@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @property _$familyName doc
+ */
 class $workflowName extends WDoc
 {
     public $attrPrefix =

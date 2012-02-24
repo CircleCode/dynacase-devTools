@@ -1,8 +1,9 @@
 <?php
 /**
  * @begin-method-ignore
- *                      this part will be deleted when construct document class until end-method-ignore
  *
+ * @property Layout lay
+ * @property string sqlinit
  */
 Class _$familyClass extends $fromClass
 {
@@ -18,7 +19,6 @@ Class _$familyClass extends $fromClass
 
     /**
      * @begin-method-ignore
-     *                      this part will be deleted when construct document class until end-method-ignore
      */
 }
 /**
