@@ -3,7 +3,7 @@
 
 from string import Template
 import sys
-import os
+import os.path
 
 from generateWorkflow import generateWorkflow,getWflMemo
 
@@ -30,7 +30,7 @@ def parseOptions():
     argParser.add_argument('--targetDir',
         help = 'target directory, where generated files will be placed',
         dest = 'targetDir',
-        default = os.path.join('..', 'Families'))
+        default = os.path.join(os.path.dirname(__file__), '..', 'Families'))
     argParser.add_argument('--force',
         help = 'overwrite existing files',
         action = 'store_true',
