@@ -6,7 +6,12 @@
                 id ID #REQUIRED
                 label CDATA #IMPLIED
                 usefor CDATA #IMPLIED>
-        <!ELEMENT process (#PCDATA)>
+        <!ELEMENT process (label)*>
+        <!ATTLIST process
+                command CDATA #REQUIRED>
+        <!ELEMENT label (#PCDATA)>
+        <!ATTLIST label
+                lang CDATA #REQUIRED>
         <!ELEMENT profile (refTarget)*>
         <!ATTLIST profile
                 id ID #REQUIRED
