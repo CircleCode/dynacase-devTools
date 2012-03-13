@@ -10,18 +10,20 @@ if sys.version_info < (2, 7):
 import argparse
 
 def parseOptions():
-    argParser = argparse.ArgumentParser(description='Generate workflow. (requires python >= 2.7)')
+    argParser = argparse.ArgumentParser(
+        description='Generate workflow. (requires python >= 2.7)'
+    )
     argParser.add_argument('-n', '--name',
         help = 'family logical name',
         dest = 'familyName')
     argParser.add_argument('--templateDir',
         help = 'templates directory',
         dest = 'templateDir',
-        default = 'templates')
+        default = os.path.join(os.path.dirname(__file__), 'templates'))
     argParser.add_argument('--targetDir',
         help = 'target directory, where generated files will be placed',
         dest = 'targetDir',
-        default = os.path.join('..', 'Families'))
+        default = os.path.join(os.path.dirname(__file__), '..', 'Families'))
     argParser.add_argument('--force',
         help = 'overwrite existing files',
         action = 'store_true',

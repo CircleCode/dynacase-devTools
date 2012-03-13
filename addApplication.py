@@ -39,7 +39,7 @@ def parseOptions():
 def addApplication(appName, childOf='', appShortName='', templateDir=None, targetDir=None):
 
     if targetDir is None:
-        targetDir = os.path.join(dirname(dirname(__file__), 'Apps'))
+        targetDir = os.path.join(dirname(dirname(__file__)), 'Apps')
 
     if templateDir is None:
         templateDir = os.path.join(dirname(__file__), 'templates')

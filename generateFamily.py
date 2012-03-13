@@ -12,10 +12,11 @@ if sys.version_info < (2, 7):
 import argparse
 
 def parseOptions():
-    argParser = argparse.ArgumentParser(description='Generate workflow. (requires python >= 2.7)')
-    argParser.add_argument('-n', '--name',
-        help = 'family logical name',
-        dest = 'familyName')
+    argParser = argparse.ArgumentParser(
+        description='Generate Family files. (requires python >= 2.7)'
+    )
+    argParser.add_argument('familyName',
+        help = 'family logical name')
     argParser.add_argument('-f', '--fromName',
         help = 'family parent name',
         dest = 'fromName',
@@ -26,7 +27,7 @@ def parseOptions():
     argParser.add_argument('--templateDir',
         help = 'templates directory',
         dest = 'templateDir',
-        default = 'templates')
+        default = os.path.join(os.path.dirname(__file__), 'templates'))
     argParser.add_argument('--targetDir',
         help = 'target directory, where generated files will be placed',
         dest = 'targetDir',
@@ -42,8 +43,6 @@ def parseOptions():
         dest = 'withWorkflow',
         default = False)
     args = argParser.parse_args()
-    if(not args.familyName):
-        args.familyName = raw_input("Give me your logical Name : ")
     if(not args.familyTitle):
         args.familyTitle = "title for %s"%(args.familyName.upper())
     return args
@@ -109,7 +108,7 @@ def main():
         'familyName'     : args.familyName.upper(),
         'familyClass'    : args.familyName.upper(),
         'fromName'       : args.fromName.upper(),
-        'fromClass'      : args.fromName.upper()
+        'fromClass'      : args.fromName
     }
     if(templateValues['fromClass'] != 'Doc'):
         templateValues['fromClass'] = '_' + templateValues['fromClass']
