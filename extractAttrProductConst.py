@@ -80,21 +80,21 @@ def extractAttr(directory, structFileName):
                 modeInAttr = False
                 injectAttr = True
                 for currentContent in methodFile.readlines():
-                    if currentContent.find("/**ATTR**/") >= 0:
-                        modeInAttr = not(modeInAttr)
-                        if modeInAttr :
+                    if(not modeInAttr):
+                        if currentContent.find("/**ATTR**/") >= 0:
                             if injectAttr:
-                                #opening attr tag
+                                modeInAttr = not(modeInAttr)
                                 methodContent.append(currentContent)
                                 for currentAttr in attributes:
                                     methodContent.append("    const %s = '%s';\n"%(currentAttr, currentAttr))
                                 #prevent injection from happening twice
                                 injectAttr = False
-                        else :
-                            #closing attr tag
+                        else:
                             methodContent.append(currentContent)
-                    else :
-                        methodContent.append(currentContent)
+                    else:
+                        if currentContent.find("/**ATTR**/") >= 0:
+                            modeInAttr = not(modeInAttr)
+                            methodContent.append(currentContent)
                 methodFile.close()
 
                 if(modeInAttr):
