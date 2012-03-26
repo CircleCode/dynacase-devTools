@@ -45,8 +45,8 @@ def addApplication(appName, childOf='', appShortName='', templateDir=None, targe
         templateDir = os.path.join(dirname(__file__), 'templates')
 
     toMoveFiles = [
-        ( 'APP.app', '%s.app'%(appName.upper()) ),
-        ( 'APP_init.php.in', '%s_init.php.in'%(appName.upper()) )
+        ( 'APP.app.template', '%s.app'%(appName.upper()) ),
+        ( 'APP_init.php.in.template', '%s_init.php.in'%(appName.upper()) )
     ]
 
     toParseFiles = [
