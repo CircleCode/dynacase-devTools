@@ -20,7 +20,7 @@ def parseOptions():
     argParser.add_argument('-f', '--fromName',
         help = 'family parent name',
         dest = 'fromName',
-        default = 'Doc')
+        default = '')
     argParser.add_argument('-t', '--title',
         help = 'family title',
         dest = 'familyTitle')
@@ -110,7 +110,7 @@ def main():
         'fromName'       : args.fromName.upper(),
         'fromClass'      : args.fromName
     }
-    if(templateValues['fromClass'] != 'Doc'):
+    if(templateValues['fromClass']):
         templateValues['fromClass'] = '_' + templateValues['fromClass']
 
     try:
