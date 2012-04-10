@@ -16,7 +16,7 @@ usage="${usage}\n\t-q is quiet level (higher is quiter)"
 
 SCRIPT_PATH=`readlink -f $(dirname $0)`
 BUILD_PACKAGE_COMMAND=${SCRIPT_PATH}/build-package.sh
-SOURCE_DIR=${SCRIPT_PATH}
+SOURCE_DIR=`pwd`
 TMP_DIR=`mktemp -d`
 WRITE_CONFIG=false
 

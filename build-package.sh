@@ -13,7 +13,8 @@ usage="${usage}\n\t-p Y makes building po files"
 usage="${usage}\n\t-w Y makes building webinst files"
 usage="${usage}\n\t-q is quiet level (higher is quiter)"
 
-SOURCE_DIR=`readlink -f $(dirname $0)`
+SCRIPT_PATH=`readlink -f $(dirname $0)`
+SOURCE_DIR=`pwd`
 TMP_DIR=`mktemp -d`
 
 quiet=0
