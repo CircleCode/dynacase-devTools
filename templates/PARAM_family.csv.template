@@ -4,7 +4,6 @@ DOC;DIR;$familyDFLID;;$familyDFLID;
 ;;;;;
 //;Father ;Title;Id;Classe;Logical Name
 BEGIN;;$familyTitle;;;$familyName
-TYPE;C;;;;
 ICON;$familyIcon;;;;
 METHOD;$familyMethod;;;;
 DFLDID;$familyDFLID;;;;
