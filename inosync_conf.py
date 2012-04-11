@@ -1,18 +1,25 @@
 import os.path
 
-projectDir = os.path.dirname(os.path.dirname(__file__))
+configFilePath = os.path.abspath(os.path.dirname(__file__))
+
+projectDir = os.path.dirname(configFilePath)
 
 # directory that should be watched for changes
 wpath = projectDir
 
-excludeFile = os.path.join(projectDir, 'rsyncExclude.txt')
-
 # common remote path
 rpath = os.path.basename(projectDir)
 
+excludeFile = os.path.join(configFilePath, 'rsyncExclude.txt')
+
+print __file__
+print "projectDir %s" % projectDir
+print "wpath %s" % wpath
+print "rpath %s" % rpath
+
 # remote locations in rsync syntax
 rnodes = [
-    # "dynacase@dynacase.local:%s" % rpath
+    "dynacase@sysman-mco.local:%s" % rpath
 ]
 
 # limit remote sync speed (in KB/s, 0 = no limit)
