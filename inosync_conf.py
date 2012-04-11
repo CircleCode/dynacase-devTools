@@ -1,14 +1,16 @@
 import os.path
 
-projectDir = os.path.dirname(os.path.dirname(__file__))
+configFilePath = os.path.abspath(os.path.dirname(__file__))
+
+projectDir = os.path.dirname(configFilePath)
 
 # directory that should be watched for changes
 wpath = projectDir
 
-excludeFile = os.path.join(projectDir, 'rsyncExclude.txt')
-
 # common remote path
 rpath = os.path.basename(projectDir)
+
+excludeFile = os.path.join(configFilePath, 'rsyncExclude.txt')
 
 # remote locations in rsync syntax
 rnodes = [
