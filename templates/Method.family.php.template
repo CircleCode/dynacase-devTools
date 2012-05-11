@@ -11,9 +11,8 @@ Class _$familyClass extends $fromClass
      * @end-method-ignore
      */
     
-    /**ATTR**/
-    /**ATTR**/
-
+    //region attributes-constants
+    //endregion
 
 
 
@@ -24,3 +23,4 @@ Class _$familyClass extends $fromClass
 /**
  * @end-method-ignore
  */
+?>

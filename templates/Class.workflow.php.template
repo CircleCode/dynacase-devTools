@@ -9,11 +9,16 @@ class $workflowName extends WDoc
     public $firstState = self::E1;
     public $viewlist = "none";
 
-    /* States */
-    const E1 =
+    //region attributes-constants
+    //endregion
 
-    /* Transitions */
+    //region States
+    const E1 =
+    //endregion
+
+    //region Transitions
     const T1 =
+    //endregion
 
 
     public $stateactivity = array(
