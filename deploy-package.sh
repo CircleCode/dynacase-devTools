@@ -273,14 +273,15 @@ fi
 
 chmod 777 ${TMP_DIR}
 
+echo "deploying in context ${target_context}"
+
 if [ -f "${BUILD_PACKAGE_COMMAND}" ]; then
     if  [ -x "${BUILD_PACKAGE_COMMAND}" ]; then
         "${BUILD_PACKAGE_COMMAND}" -d ${SOURCE_DIR} -o ${TMP_DIR} -q 2 -p ${makepo}
         buildstatus=$?
         if [ ${buildstatus} -gt 0 ]; then
             echo "an error occured in webinst generation"
-            rm -rf ${TMP_DIR}
-            exit $((${buildstatus}+1))
+            exit ${buildstatus}
         fi
     else
         echo "${BUILD_PACKAGE_COMMAND} is not executable"

@@ -8,7 +8,7 @@ import argparse
 import logging
 
 logging.basicConfig(
-    format='%(levelname)s:%(message)s'
+    format='[%(lineno)d] %(levelname)s:%(message)s'
 )
 
 class MethodStructException(Exception):
@@ -116,11 +116,11 @@ def buildFileContent(methodFileName, attributes, args):
         return methodContent
 
 def extractFamilyAttr(directory, structFileName, args):
+    methodFileName = ''
     paramFileName = os.path.join(os.path.dirname(structFileName), "PARAM_" + os.path.basename(structFileName)[7:])
     if(not os.path.isfile(paramFileName)):
-        logging.debug("skipping %s since it does not exists", paramFileName)
+        logging.info("skipping %s since it does not exists", paramFileName)
     else:
-        methodFileName = ''
         paramReader = codecs.open(paramFileName, 'r', 'utf8').readlines()
         for currentLine in paramReader:
             currentLine = currentLine.split(";")
@@ -128,7 +128,9 @@ def extractFamilyAttr(directory, structFileName, args):
                 if( (currentLine[1][0] != '*') and (currentLine[1][0] != '+') ):
                     methodFileName = currentLine[1]
                     break
-
+    if(not os.path.isfile(structFileName)):
+        logging.info("skipping %s since it does not exists", structFileName)
+    else:
         structReader = codecs.open(structFileName, 'r', 'utf8').readlines()
         attributes = {}
         for currentLine in structReader:
@@ -146,57 +148,62 @@ def extractFamilyAttr(directory, structFileName, args):
                         break
                     methodFileName = currentLine[1]
 
-        if(methodFileName == ''):
-            logging.warning("skipping %s | %s since their method declaration is eroneous", structFileName, paramFileName)
+    if(not methodFileName):
+        logging.warning("skipping %s | %s since their method declaration is eroneous", paramFileName, structFileName)
+    else:
+        methodFileName = os.path.join(directory, methodFileName)
+        if(not os.path.isfile(methodFileName)):
+            logging.warning("method file %s for %s does not exists", methodFileName, paramFileName)
         else:
-            methodFileName = os.path.join(directory, methodFileName)
-            if(not os.path.isfile(methodFileName)):
-                logging.warning("method file %s for %s | %s does not exists", methodFileName, structFileName, paramFileName)
-            else:
-                logging.debug("working on %s for %s | %s", methodFileName, structFileName, paramFileName)
-                try:
-                    methodContent = buildFileContent(methodFileName, attributes, args)
-                    if(len(methodContent) > 0):
-                        methodFile = codecs.open(methodFileName, 'w', 'utf8')
-                        methodFile.writelines(methodContent)
-                        methodFile.close()
-                        logging.debug("%s attributes written in %s for %s | %s ", len(attributes), os.path.basename(methodFileName), os.path.basename(structFileName), os.path.basename(paramFileName))
-                    else:
-                        logging.debug("Nothing to write in %s for %s | %s ", len(attributes), os.path.basename(methodFileName), os.path.basename(structFileName), os.path.basename(paramFileName))
-                except MethodStructException as e:
-                    logging.error(e.value)
+            logging.info("working on %s for %s | %s", methodFileName, structFileName, paramFileName)
+            try:
+                methodContent = buildFileContent(methodFileName, attributes, args)
+                if(len(methodContent) > 0):
+                    methodFile = codecs.open(methodFileName, 'w', 'utf8')
+                    methodFile.writelines(methodContent)
+                    methodFile.close()
+                    logging.info("%s attributes written in %s for %s", len(attributes), os.path.basename(methodFileName), os.path.basename(structFileName))
+                else:
+                    logging.warning("Nothing to write in ", methodFileName)
+            except MethodStructException as e:
+                logging.error(e.value)
 
 def extractWflAttr(directory, wflFileName, args):
-        structReader = codecs.open(wflFileName, 'r', 'utf8').readlines()
-        attributes = {}
-        for currentLine in structReader:
-            currentLine = currentLine.split(";")
-            if currentLine[0] == "ATTR":
-                attributes[currentLine[1].lower()] = currentLine[3]
-            if currentLine[0] == "PARAM":
-                attributes[currentLine[1].lower()] = currentLine[3]
-            if currentLine[0] == "BEGIN":
-                if(currentLine[4] != ''):
-                    classFileName = currentLine[4]
-                else:
-                    classFileName = ''
-                    logging.error("no className for %s", wflFileName)
-                    break
-
-        if(classFileName == ''):
-            logging.debug("skipping %s", wflFileName)
-        else:
-            classFileName = os.path.join(directory, classFileName)
-            if(not os.path.isfile(classFileName)):
-                logging.error("class file %s for %s does not exists", classFileName, wflFileName)
+    structReader = codecs.open(wflFileName, 'r', 'utf8').readlines()
+    attributes = {}
+    for currentLine in structReader:
+        currentLine = currentLine.split(";")
+        if currentLine[0] == "ATTR":
+            attributes[currentLine[1].lower()] = currentLine[3]
+        if currentLine[0] == "PARAM":
+            attributes[currentLine[1].lower()] = currentLine[3]
+        if currentLine[0] == "BEGIN":
+            if(currentLine[4] != ''):
+                classFileName = currentLine[4]
             else:
-                logging.debug("working on %s for %s", classFileName, wflFileName)
-                classContent = buildFileContent(classFileName, attributes, args)
-                if(len(classContent) > 0):
-                    classFile = codecs.open(classFileName, 'w', 'utf8')
-                    classFile.writelines(classFileName)
-                    classFile.close()
-                    logging.debug("%s attributes written in %s for %s", len(attributes), os.path.basename(classFileName), os.path.basename(wflFileName))
+                classFileName = ''
+                logging.error("no className for %s", wflFileName)
+                break
+
+    if(classFileName == ''):
+        logging.info("skipping %s", wflFileName)
+    else:
+        classFileName = os.path.join(directory, "Class." + classFileName + ".php")
+        if(not os.path.isfile(classFileName)):
+            logging.error("class file %s for %s does not exists", classFileName, wflFileName)
+        else:
+            logging.info("working on %s for %s", classFileName, wflFileName)
+            try:
+                methodContent = buildFileContent(classFileName, attributes, args)
+                if(len(methodContent) > 0):
+                    methodFile = codecs.open(classFileName, 'w', 'utf8')
+                    methodFile.writelines(methodContent)
+                    methodFile.close()
+                    logging.info("%s attributes written in %s for %s", len(attributes), os.path.basename(classFileName), os.path.basename(wflFileName))
+                else:
+                    logging.warning("Nothing to write in ", classFileName)
+            except MethodStructException as e:
+                logging.error(e.value)
 
 def main():
     args = parseOptions()
@@ -210,15 +217,16 @@ def main():
         logging.error("log level fallback to INFO")
 
 
-    if(not args.familyCsvFiles):
+    if(not args.familyCsvFiles and not args.wflCsvFiles):
         args.familyCsvFiles = getFamilyFiles(args.familiesFolder)
-    if(not args.wflCsvFiles):
         args.wflCsvFiles = getWflFiles(args.familiesFolder)
 
-    for fileName in args.familyCsvFiles:
-        extractFamilyAttr(args.familiesFolder, fileName, args)
-    for fileName in args.wflCsvFiles:
-        extractFamilyAttr(args.familiesFolder, fileName, args)
+    if(args.familyCsvFiles):
+        for fileName in args.familyCsvFiles:
+            extractFamilyAttr(args.familiesFolder, fileName, args)
+    if(args.wflCsvFiles):
+        for fileName in args.wflCsvFiles:
+            extractWflAttr(args.familiesFolder, fileName, args)
 
 if __name__ == "__main__":
     main()
