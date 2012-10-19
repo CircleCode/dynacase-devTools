@@ -86,7 +86,7 @@ if [ ! -w "${outputdir}" ]; then
     exit 1
 fi
 
-tar --exclude='*.webinst' -C ${SOURCE_DIR} -cf - . | tar -C ${TMP_DIR} -xf -
+tar --exclude='*.webinst' -h -C ${SOURCE_DIR} -cf - . | tar -C ${TMP_DIR} -xf -
 if [ -f "${SOURCE_DIR}/info.xml.in.dev" ]; then
     cp -f "${SOURCE_DIR}/info.xml.in.dev" "${TMP_DIR}/info.xml.in"
 fi
