@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import codecs
 import xml.dom, xml.dom.minidom
 import os
-from xml.dom.ext import PrettyPrint
 from StringIO import StringIO
 import sys
 
@@ -13,7 +13,7 @@ import argparse
 
 def toprettyxml_fixed (node, encoding='utf-8'):
     tmpStream = StringIO()
-    PrettyPrint(node, stream=tmpStream, encoding=encoding)
+    tmpStream.write(node.toxml())
     return tmpStream.getvalue()
 
 def emptyNode(node):
@@ -104,12 +104,13 @@ def appendTarget(nodes, targetNode, phases, targetsFile, visitedProfileIds):
                     nodes[phase].appendChild(localNode)
 
 def generateInfoXml(targetsFile, infoXmlFile, targetIds, phases):
-    targetsDom = xml.dom.minidom.parse(open(targetsFile, 'r'))
+    targetsDom = xml.dom.minidom.parse(targetsFile)
 
     if(len(targetIds) == 0):
         return listTargets(targetsDom)
 
-    infoXmlDom = xml.dom.minidom.parse(open(infoXmlFile, 'r'))
+    infoXmlDom = xml.dom.minidom.parse(infoXmlFile)
+
     nodes = getNodes(infoXmlDom, phases)
 
     for targetId in targetIds:
@@ -124,7 +125,15 @@ def generateInfoXml(targetsFile, infoXmlFile, targetIds, phases):
 
 def main():
     args = parseOptions()
-    print generateInfoXml(args.targetsFile, args.infoXmlFile, args.targetIds, args.phases)
+    xmlString =  generateInfoXml(args.targetsFile, args.infoXmlFile, args.targetIds, args.phases)
+
+	# Console setting to handle UTF-8 characters
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+    sys.stderr = codecs.getwriter('utf8')(sys.stderr)
+
+    print xmlString
 
 
 if __name__ == "__main__":
