@@ -49,22 +49,22 @@ def parseOptions():
 
 def getStructMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/STRUCT_$familyName.csv">
-        <label lang="en">importing STRUCT_$familyName.csv</label>
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_STRUCT.csv">
+        <label lang="en">importing $familyName_STRUCT.csv</label>
     </process>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
 def getParamMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/PARAM_$familyName.csv">
-        <label lang="en">importing PARAM_$familyName.csv</label>
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_PARAM.csv">
+        <label lang="en">importing $familyName_PARAM.csv</label>
     </process>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
 def generateFamily(templateValues, args):
     targetsPath ={
-        'csvStruct': os.path.join(args.targetDir, "STRUCT_%s.csv"%(args.familyName.lower())),
-        'csvParam' : os.path.join(args.targetDir, "PARAM_%s.csv"%(args.familyName.lower())),
+        'csvStruct': os.path.join(args.targetDir, "%s_STRUCT.csv"%(args.familyName.lower())),
+        'csvParam' : os.path.join(args.targetDir, "%s_PARAM.csv"%(args.familyName.lower())),
         'phpMethod': os.path.join(args.targetDir, templateValues['familyMethod'])
     }
 

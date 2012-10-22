@@ -36,15 +36,15 @@ def parseOptions():
 
 def getWflMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/WFL_$familyName.csv">
-        <label lang="en">importing WFL_$familyName.csv</label>
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_WFL.csv">
+        <label lang="en">importing $familyName_WFL.csv</label>
     </process>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
 def generateWorkflow(templateValues, args):
-    templateValues['workflowName'] = "WFL_%s"%(templateValues['familyName'].upper())
+    templateValues['workflowName'] = "%s_WFL"%(templateValues['familyName'].upper())
     targetsPath ={
-        'wflCsv': os.path.join(args.targetDir, "WFL_%s.csv"%(args.familyName.lower())),
+        'wflCsv': os.path.join(args.targetDir, "%s_WFL.csv"%(args.familyName.lower())),
         'wflPhp': os.path.join(args.targetDir, "Class.%s.php"%(templateValues['workflowName']))
     }
 
