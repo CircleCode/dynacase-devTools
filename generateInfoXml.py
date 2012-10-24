@@ -29,12 +29,12 @@ def addTarget(node, targetNode):
 
 def parseOptions():
     argParser = argparse.ArgumentParser(description='Generate info.xml file from targets. (requires PyXML and python >= 2.7)')
-    argParser.add_argument('--to',
-        help = 'info.xml target',
-        default = os.path.join('..', 'info.xml.in'),
+    argParser.add_argument('--template',
+        help = 'info.xml template',
+        default = os.path.join('.', 'info.xml.in'),
         dest = 'infoXmlFile',
         metavar = './info.xml.in')
-    argParser.add_argument('--from',
+    argParser.add_argument('--targets',
         help = 'targets file',
         default = os.path.join(os.getcwd(), 'targets.xml'),
         dest = 'targetsFile',
@@ -127,7 +127,7 @@ def main():
     args = parseOptions()
     xmlString =  generateInfoXml(args.targetsFile, args.infoXmlFile, args.targetIds, args.phases)
 
-	# Console setting to handle UTF-8 characters
+    # Console setting to handle UTF-8 characters
     reload(sys)
     sys.setdefaultencoding('utf-8')
     sys.stdout = codecs.getwriter('utf8')(sys.stdout)
