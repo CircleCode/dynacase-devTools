@@ -49,15 +49,15 @@ def parseOptions():
 
 def getStructMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_STRUCT.csv">
-        <label lang="en">importing $familyName_STRUCT.csv</label>
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/${familyName}_STRUCT.csv">
+        <label lang="en">importing ${familyName}_STRUCT.csv</label>
     </process>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
 def getParamMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_PARAM.csv">
-        <label lang="en">importing $familyName_PARAM.csv</label>
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/${familyName}_PARAM.csv">
+        <label lang="en">importing ${familyName}_PARAM.csv</label>
     </process>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
@@ -110,8 +110,12 @@ def main():
         'fromName'       : args.fromName.upper(),
         'fromClass'      : args.fromName
     }
-    if(templateValues['fromClass']):
-        templateValues['fromClass'] = '_' + templateValues['fromClass']
+    if(args.fromName):
+        templateValues['fromName'] = args.fromName.upper()
+        templateValues['fromClass'] = '_' + args.fromName
+    else:
+        templateValues['fromName'] = ''
+        templateValues['fromClass'] = Doc
 
     try:
         generateFamily(templateValues, args)

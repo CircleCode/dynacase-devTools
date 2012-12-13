@@ -36,8 +36,8 @@ def parseOptions():
 
 def getWflMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_WFL.csv">
-        <label lang="en">importing $familyName_WFL.csv</label>
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/${familyName}_WFL.csv">
+        <label lang="en">importing ${familyName}_WFL.csv</label>
     </process>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
