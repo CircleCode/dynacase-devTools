@@ -38,19 +38,21 @@ def parseOptions():
 
 def addApplication(appName, childOf='', appShortName='', templateDir=None, targetDir=None):
 
+    appNameUpper = appName.upper()
+
     if targetDir is None:
-        targetDir = os.path.join(dirname(dirname(__file__)), 'Apps')
+        targetDir = os.path.join(dirname(dirname(__file__)), appNameUpper)
 
     if templateDir is None:
         templateDir = os.path.join(dirname(__file__), 'templates')
 
     toMoveFiles = [
-        ( 'APP.app.template', '%s.app'%(appName.upper()) ),
-        ( 'APP_init.php.in.template', '%s_init.php.in'%(appName.upper()) )
+        ('APP.app.template', '%s.app' % (appNameUpper)),
+        ('APP_init.php.in.template', '%s_init.php.in' % (appNameUpper))
     ]
 
     toParseFiles = [
-        '%s.app'%(appName.upper())
+        '%s.app' % (appNameUpper)
     ]
 
     # create tmp dir
@@ -71,14 +73,14 @@ def addApplication(appName, childOf='', appShortName='', templateDir=None, targe
 
         for line in fileinput.input(parsedFileFullPath, inplace=1):
             print Template(line).safe_substitute({
-            'APPNAME': appName.upper(),
+            'APPNAME': appNameUpper,
             'CHILDOF': childOf.upper(),
             'appShortName': appShortName,
-            'appIcon': "%s.png"%(appName.lower())
+            'appIcon': "%s.png" % (appName.lower())
         }).rstrip() #strip to remove EOL duplication
 
     # move tmp dir to target dir
-    shutil.move(tempDir, os.path.join(targetDir, appName.upper()))
+    shutil.move(tempDir, os.path.join(targetDir, appNameUpper))
     return
 
 def main():

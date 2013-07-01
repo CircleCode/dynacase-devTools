@@ -1,0 +1,13 @@
+<?php
+/**
+ *
+ * @property Layout lay
+ * @property string sqlinit
+ */
+Class $familyClass extends $fromClass
+{
+
+
+
+}
+?>

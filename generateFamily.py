@@ -31,7 +31,7 @@ def parseOptions():
     argParser.add_argument('--targetDir',
         help = 'target directory, where generated files will be placed',
         dest = 'targetDir',
-        default = os.path.join(os.path.dirname(__file__), '..', 'Families'))
+        required = True)
     argParser.add_argument('--force',
         help = 'overwrite existing files',
         action = 'store_true',
@@ -49,23 +49,19 @@ def parseOptions():
 
 def getStructMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_STRUCT.csv">
-        <label lang="en">importing $familyName_STRUCT.csv</label>
-    </process>"""
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName__STRUCT.csv"/>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
 def getParamMemo(templateValues):
     importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_PARAM.csv">
-        <label lang="en">importing $familyName_PARAM.csv</label>
-    </process>"""
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName__PARAM.csv"/>"""
     return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
 
 def generateFamily(templateValues, args):
     targetsPath ={
-        'csvStruct': os.path.join(args.targetDir, "%s_STRUCT.csv"%(args.familyName.lower())),
-        'csvParam' : os.path.join(args.targetDir, "%s_PARAM.csv"%(args.familyName.lower())),
-        'phpMethod': os.path.join(args.targetDir, templateValues['familyMethod'])
+        'csvStruct': os.path.join(args.targetDir, "%s__STRUCT.csv"%(args.familyName.lower())),
+        'csvParam' : os.path.join(args.targetDir, "%s__PARAM.csv"%(args.familyName.lower())),
+        'class': os.path.join(args.targetDir, "%s__class.php"%(args.familyName.lower()))
     }
 
     if(not args.force):
@@ -78,9 +74,9 @@ def generateFamily(templateValues, args):
             raise NameError("overwriting %s files"%(overwrittenFiles))
 
     templateFilesPath ={
-        'csvStruct': os.path.join(args.templateDir, "STRUCT_family.csv.template"),
-        'csvParam' : os.path.join(args.templateDir, "PARAM_family.csv.template"),
-        'phpMethod': os.path.join(args.templateDir, "Method.family.php.template")
+        'csvStruct': os.path.join(args.templateDir, "family__STRUCT.csv.template"),
+        'csvParam' : os.path.join(args.templateDir, "family__PARAM.csv.template"),
+        'class': os.path.join(args.templateDir, "family.php.template")
     }
 
     templates = {}
