@@ -1,0 +1,7 @@
+//;fromid;title;special id;classname;name;;;;;;;;;;
+BEGIN;WDOC;$workflowName;;--;$workflowName;;;;;;;;;;
+USEFOR;SW;;;;;;;;;;;;;;
+CLASS;$namespaceClass;
+//;idattr;idframe;label;T;A;type;ord;vis;needed;link;phpfile;phpfunc;elink;constraint;option
+;;;;;;;;;;;;;;;
+END;;;;;;;;;;;;;;;

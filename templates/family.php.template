@@ -1,9 +1,8 @@
 <?php
-/**
- *
- * @property Layout lay
- * @property string sqlinit
- */
+
+namespace $namespace;
+use \Dcp\AttributeIdentifiers\$familyClass as MyAttributes;
+
 Class $familyClass extends $fromClass
 {
 

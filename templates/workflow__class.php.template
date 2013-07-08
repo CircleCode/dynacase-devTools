@@ -1,0 +1,39 @@
+<?php
+
+namespace $namespace;
+
+class $familyClass extends \Dcp\Family\WDoc
+{
+    public $attrPrefix =
+    public $firstState = self::E1;
+    public $viewlist = "none";
+
+    //region MyAttributes-constants
+    //endregion
+
+    //region States
+    const E1 =
+    //endregion
+
+    //region Transitions
+    const T1 =
+    //endregion
+
+
+    public $stateactivity = array(
+
+    );
+
+
+    public $transitions = array(
+
+    );
+
+    public $cycle = array(
+
+    );
+
+
+
+}
+?>

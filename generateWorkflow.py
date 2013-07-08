@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from string import Template
+import string
 import sys
 import os
 
@@ -13,17 +14,18 @@ def parseOptions():
     argParser = argparse.ArgumentParser(
         description='Generate workflow. (requires python >= 2.7)'
     )
-    argParser.add_argument('-n', '--name',
-        help = 'family logical name',
-        dest = 'familyName')
+    argParser.add_argument('familyName',
+        help = 'family logical name')
+    argParser.add_argument('namespace',
+        help = 'family namespace')
     argParser.add_argument('--templateDir',
         help = 'templates directory',
         dest = 'templateDir',
         default = os.path.join(os.path.dirname(__file__), 'templates'))
-    argParser.add_argument('--targetDir',
+    argParser.add_argument('-t', '--targetDir',
         help = 'target directory, where generated files will be placed',
         dest = 'targetDir',
-        default = os.path.join(os.path.dirname(__file__), '..', 'Families'))
+        required = True)
     argParser.add_argument('--force',
         help = 'overwrite existing files',
         action = 'store_true',
@@ -35,17 +37,14 @@ def parseOptions():
     return args
 
 def getWflMemo(templateValues):
-    importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName_WFL.csv">
-        <label lang="en">importing $familyName_WFL.csv</label>
-    </process>"""
-    return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
+    return """
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/%s__WFL.csv"/>"""%(templateValues['familyName'].lower())
 
 def generateWorkflow(templateValues, args):
     templateValues['workflowName'] = "%s_WFL"%(templateValues['familyName'].upper())
     targetsPath ={
-        'wflCsv': os.path.join(args.targetDir, "%s_WFL.csv"%(args.familyName.lower())),
-        'wflPhp': os.path.join(args.targetDir, "Class.%s.php"%(templateValues['workflowName']))
+        'wflCsv': os.path.join(args.targetDir, "%s__WFL.csv"%(args.familyName.lower())),
+        'wflPhp': os.path.join(args.targetDir, "%s__WFL_CLASS.php"%(args.familyName.lower()))
     }
 
     if(not args.force):
@@ -58,8 +57,8 @@ def generateWorkflow(templateValues, args):
             raise NameError("overwriting %s files"%(overwrittenFiles))
 
     templateFilesPath ={
-        'wflCsv': os.path.join(args.templateDir, "WFL_workflow.csv.template"),
-        'wflPhp' : os.path.join(args.templateDir, "Class.workflow.php.template")
+        'wflCsv': os.path.join(args.templateDir, "workflow__WFL.csv.template"),
+        'wflPhp' : os.path.join(args.templateDir, "workflow__class.php.template")
     }
 
     templates = {}
@@ -80,8 +79,12 @@ def main():
     args = parseOptions()
 
     templateValues = {
-        'familyName' : args.familyName.upper()
+        'familyName' : args.familyName.upper(),
+        'familyClass'    : string.capwords(args.familyName.upper()),
+        'namespace'      : args.namespace
     }
+
+    templateValues['namespaceClass'] = "\\%s\\%s"%(templateValues['namespace'], templateValues['familyClass'])
 
     try:
         generateWorkflow(templateValues, args)

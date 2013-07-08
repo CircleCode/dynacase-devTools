@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from string import Template
+import string
 import sys
 import os.path
 
@@ -17,18 +18,24 @@ def parseOptions():
     )
     argParser.add_argument('familyName',
         help = 'family logical name')
+    argParser.add_argument('namespace',
+        help = 'family namespace')
     argParser.add_argument('-f', '--fromName',
         help = 'family parent name',
         dest = 'fromName',
         default = '')
-    argParser.add_argument('-t', '--title',
+    argParser.add_argument('-p', '--fromClass',
+        help = 'family parent class (with namespace)',
+        dest = 'fromClass',
+        default = '\Dcp\Family\Document')
+    argParser.add_argument('--title',
         help = 'family title',
         dest = 'familyTitle')
     argParser.add_argument('--templateDir',
         help = 'templates directory',
         dest = 'templateDir',
         default = os.path.join(os.path.dirname(__file__), 'templates'))
-    argParser.add_argument('--targetDir',
+    argParser.add_argument('-t', '--targetDir',
         help = 'target directory, where generated files will be placed',
         dest = 'targetDir',
         required = True)
@@ -48,20 +55,18 @@ def parseOptions():
     return args
 
 def getStructMemo(templateValues):
-    importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName__STRUCT.csv"/>"""
-    return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
+    return """
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/%s__STRUCT.csv"/>"""%(templateValues['familyName'].lower())
 
 def getParamMemo(templateValues):
-    importStr = """
-    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/$familyName__PARAM.csv"/>"""
-    return Template(importStr).safe_substitute(familyName = templateValues['familyName'].lower())
+    return """
+    <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/%s__PARAM.csv"/>"""%(templateValues['familyName'].lower())
 
 def generateFamily(templateValues, args):
     targetsPath ={
         'csvStruct': os.path.join(args.targetDir, "%s__STRUCT.csv"%(args.familyName.lower())),
         'csvParam' : os.path.join(args.targetDir, "%s__PARAM.csv"%(args.familyName.lower())),
-        'class': os.path.join(args.targetDir, "%s__class.php"%(args.familyName.lower()))
+        'class': os.path.join(args.targetDir, "%s__CLASS.php"%(args.familyName.lower()))
     }
 
     if(not args.force):
@@ -102,12 +107,13 @@ def main():
         'familyMethod'   : "Method.%s.php"%(args.familyName.lower()),
         'familyDFLID'    : "FLD_%s"%(args.familyName.upper()),
         'familyName'     : args.familyName.upper(),
-        'familyClass'    : args.familyName.upper(),
+        'familyClass'    : string.capwords(args.familyName.upper()),
         'fromName'       : args.fromName.upper(),
-        'fromClass'      : args.fromName
+        'fromClass'      : args.fromClass,
+        'namespace'      : args.namespace
     }
-    if(templateValues['fromClass']):
-        templateValues['fromClass'] = '_' + templateValues['fromClass']
+
+    templateValues['namespaceClass'] = "%s\\%s"%(templateValues['namespace'], templateValues['familyClass'])
 
     try:
         generateFamily(templateValues, args)

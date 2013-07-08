@@ -3,7 +3,7 @@ ORDER;DIR;;;ba_title;
 DOC;DIR;$familyDFLID;;$familyDFLID;
 ;;;;;
 //;Father ;Title;Id;Classe;Logical Name
-BEGIN;;$familyTitle;;$familyClass;$familyName
+BEGIN;;$familyTitle;;;$familyName
 ICON;$familyIcon;;;;
 DFLDID;$familyDFLID;;;;
 END;;;;;
