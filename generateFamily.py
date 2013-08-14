@@ -102,15 +102,15 @@ def main():
     args = parseOptions()
 
     templateValues = {
-        'familyTitle'    : args.familyTitle,
-        'familyIcon'     : "%s.png"%(args.familyName.lower()),
-        'familyMethod'   : "Method.%s.php"%(args.familyName.lower()),
-        'familyDFLID'    : "FLD_%s"%(args.familyName.upper()),
-        'familyName'     : args.familyName.upper(),
-        'familyClass'    : string.capwords(args.familyName.upper()),
-        'fromName'       : args.fromName.upper(),
-        'fromClass'      : args.fromClass,
-        'namespace'      : args.namespace
+        'familyTitle'   : args.familyTitle,
+        'familyIcon'    : "%s.png"%(args.familyName.lower()),
+        'familyMethod'  : "Method.%s.php"%(args.familyName.lower()),
+        'familyDFLID'   : "FLD_%s"%(args.familyName.upper()),
+        'familyName'    : args.familyName.upper(),
+        'familyClass'   : args.familyName.capitalize(),
+        'fromName'      : args.fromName.upper(),
+        'fromClass'     : args.fromClass,
+        'namespace'     : string.capwords(args.namespace, '\\')
     }
 
     templateValues['namespaceClass'] = "%s\\%s"%(templateValues['namespace'], templateValues['familyClass'])

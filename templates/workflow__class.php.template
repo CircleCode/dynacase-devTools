@@ -2,9 +2,9 @@
 
 namespace $namespace;
 
-class $familyClass extends \Dcp\Family\WDoc
+class $workflowClass extends \Dcp\Family\WDoc
 {
-    public $attrPrefix =
+    public $attrPrefix = 'FIXME' //FIXME: set attrPrefix
     public $firstState = self::E1;
     public $viewlist = "none";
 
@@ -12,25 +12,25 @@ class $familyClass extends \Dcp\Family\WDoc
     //endregion
 
     //region States
-    const E1 =
+    const E1 = 'FIXME' //FIXME: set E1
     //endregion
 
     //region Transitions
-    const T1 =
+    const T1 = 'FIXME' //FIXME: set T1
     //endregion
 
 
     public $stateactivity = array(
-
+        //FIXME: set stateactivity
     );
 
 
     public $transitions = array(
-
+        //FIXME: set transitions
     );
 
     public $cycle = array(
-
+        //FIXME: set cycle
     );
 
 

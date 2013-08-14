@@ -41,7 +41,6 @@ def getWflMemo(templateValues):
     <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/%s__WFL.csv"/>"""%(templateValues['familyName'].lower())
 
 def generateWorkflow(templateValues, args):
-    templateValues['workflowName'] = "%s_WFL"%(templateValues['familyName'].upper())
     targetsPath ={
         'wflCsv': os.path.join(args.targetDir, "%s__WFL.csv"%(args.familyName.lower())),
         'wflPhp': os.path.join(args.targetDir, "%s__WFL_CLASS.php"%(args.familyName.lower()))
@@ -79,12 +78,13 @@ def main():
     args = parseOptions()
 
     templateValues = {
-        'familyName' : args.familyName.upper(),
-        'familyClass'    : string.capwords(args.familyName.upper()),
-        'namespace'      : args.namespace
+        'familyName'    : args.familyName.upper(),
+        'familyClass'   : string.capwords(args.familyName.upper()),
+        'namespace'     : string.capwords(args.namespace, '\\')
     }
-
-    templateValues['namespaceClass'] = "\\%s\\%s"%(templateValues['namespace'], templateValues['familyClass'])
+    templateValues['workflowName'] = "%s_WFL"%(templateValues['familyName'].upper())
+    templateValues['workflowClass'] = "%s_wfl"%(templateValues['familyName'].capitalize())
+    templateValues['namespaceClass'] = "%s\\%s"%(templateValues['namespace'],templateValues['workflowClass'])
 
     try:
         generateWorkflow(templateValues, args)
