@@ -1,0 +1,30 @@
+<?php
+
+namespace $namespace;
+
+abstract class $workflowClass extends \Dcp\Family\WDoc
+{
+    //region States$stateConstants
+    //endregion
+
+    //region Transitions$transitionConstants
+    //endregion
+
+    //region structure
+    public $$firstState = self::$firstState;
+
+    public $$transitions = Array($transitions
+    );
+
+    public $$cycle = Array($cycle
+    );
+
+    public $$stateactivity = Array($activities
+    );
+    //endregion
+
+    //region abstract methods$abstractMethods
+    //endregion
+}
+
+?>
