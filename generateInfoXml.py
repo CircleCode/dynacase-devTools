@@ -97,7 +97,7 @@ def appendTarget(nodes, targetNode, phases, targetsFile, visitedProfileIds):
             useFor = phases
         for phase in phases:
             if(phase in useFor):
-                commentNode = nodes[phase].ownerDocument.createComment('generated from target %s#%s (%s)'%(targetsFile, targetNode.getAttribute('id'), targetNode.getAttribute('label')))
+                commentNode = nodes[phase].ownerDocument.createComment('generated from target %s#%s (%s)'%(os.path.split(targetsFile)[1], targetNode.getAttribute('id'), targetNode.getAttribute('label')))
                 nodes[phase].appendChild(commentNode)
                 for process in targetNode.childNodes:
                     localNode = nodes[phase].ownerDocument.importNode(process, True)
