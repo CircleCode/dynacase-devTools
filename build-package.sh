@@ -133,18 +133,21 @@ if ${makepo}; then
     echo "--- make po exitcode: $? ---" >> ${LOG_FILE}
 
     nbpo=0
-    for po in ${TMP_DIR}/*.po; do
+    for po in `find "${TMP_DIR}/locale" -name "*.po"`; do
         nbpo=$((${nbpo}+1))
-        cp ${po} ${outputdir}
-        cp ${po} ${SOURCE_DIR}
     done
 
-    if [ ${nbpo} -gt 0 ]; then
+    echo '' >> ${LOG_FILE}
+    echo '=== copy po ===' >> ${LOG_FILE}
+    echo '' >> ${LOG_FILE}
+    rm -rf ${SOURCE_DIR}/locale &>> ${LOG_FILE} && cp -r ${TMP_DIR}/locale ${SOURCE_DIR}/locale &>> ${LOG_FILE}
+    echo '' >> ${LOG_FILE}
+    copypoexitcode=$?
+    echo "--- copy po exitcode: $copypoexitcode ---" >> ${LOG_FILE}
+
+    if [ ${copypoexitcode} -eq 0 -a ${nbpo} -gt 0 ]; then
         if [ ${quiet} -lt 2 ]; then
-            echo "${nbpo} po(s): "
-            for po in ${outputdir}/*.po; do
-                echo -e "\t${po}"
-            done
+            echo "${nbpo} po(s) generated"
             echo -e "\tpo were copied in source dir:${SOURCE_DIR}"
         fi
     else
@@ -160,7 +163,7 @@ if ${makewebinst}; then
     make webinst &>> ${LOG_FILE}
     makewebinstexitcode=$?
     echo '' >> ${LOG_FILE}
-    echo "--- make webinst exitcode: ${makewebinstexitcode} ---" >> ${LOG_FILE}
+    echo "--- make webinst exitcode: $makewebinstexitcode ---" >> ${LOG_FILE}
 
     if [ ${makewebinstexitcode} -eq 0 ]; then
         nbwebinst=0
