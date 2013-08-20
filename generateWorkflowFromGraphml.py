@@ -27,15 +27,24 @@ def parseOptions():
     argParser.add_argument('namespace',
         help = 'target namespace')
 
+    argParser.add_argument('-t', '--targetDir',
+        help = 'target directory, where generated files will be placed',
+        dest = 'targetDir',
+        required = True)
+
+    argParser.add_argument('--prefix',
+        help = 'prefix',
+        dest = 'prefix',
+        default = '')
+
     argParser.add_argument('--templateDir',
         help = 'templates directory',
         dest = 'templateDir',
         default = os.path.join(os.path.dirname(__file__), 'templates'))
 
-    argParser.add_argument('-t', '--targetDir',
-        help = 'target directory, where generated files will be placed',
-        dest = 'targetDir',
-        required = True)
+    argParser.add_argument('--localesTargetDir',
+        help = 'where to put locales stub file',
+        dest = 'localesTargetDir')
 
     argParser.add_argument('--force',
         help = 'overwrite existing files',
@@ -64,9 +73,16 @@ def parseOptions():
 
     targetFile = os.path.join(args.targetDir, "%s__WFL_BASE_CLASS.php"%(args.familyName.lower()))
     if(os.path.isfile(targetFile) and not args.force):
-        errors.append("[ERROR] targetFile: %s already exists. Use --force to overwrite"%(tplFile))
+        errors.append("[ERROR] targetFile: %s already exists. Use --force to overwrite"%(targetFile))
     else:
         args.targetFile = targetFile
+
+    if(args.localesTargetDir is not None):
+        localesTargetFile = os.path.join(args.localesTargetDir, "%s__WFL_BASE_LOCALES.php"%(args.familyName.lower()))
+        if(os.path.isfile(localesTargetFile) and not args.force):
+            errors.append("[ERROR] targetFile: %s already exists. Use --force to overwrite"%(localesTargetFile))
+        else:
+            args.localesTargetFile = localesTargetFile
 
     if(len(errors) > 0):
         for error in errors:
@@ -75,7 +91,7 @@ def parseOptions():
 
     return args
 
-def getStates(tree, namespaces):
+def getStates(tree, namespaces, prefix=''):
     states = []
     propNames = {
         'id' : tree.find("./graphml:key[@for='node'][@attr.name='id']", namespaces).get('id'),
@@ -90,6 +106,10 @@ def getStates(tree, namespaces):
                 state[propName] = propertyNode.text
 
         state['desc'] = ' '.join(node.find(".//y:NodeLabel", namespaces).text.splitlines())
+
+        if(prefix is not ''):
+            state['id'] = "%s_%s"%(prefix, state['id'])
+
         states.append(state)
 
     # sort states by name
@@ -97,7 +117,7 @@ def getStates(tree, namespaces):
 
     return states
 
-def getTransitions(tree, namespaces):
+def getTransitions(tree, namespaces, prefix=''):
     transitions = []
     nodeNamePropName = tree.find("./graphml:key[@for='node'][@attr.name='name']", namespaces).get('id')
     propNames = {
@@ -120,6 +140,10 @@ def getTransitions(tree, namespaces):
         transition['desc'] = ' '.join(edge.find(".//y:EdgeLabel", namespaces).text.splitlines())
         transition['e1'] = tree.find(".//graphml:node[@id='%s']/graphml:data[@key='%s']"%(edge.get('source'), nodeNamePropName), namespaces).text
         transition['e2'] = tree.find(".//graphml:node[@id='%s']/graphml:data[@key='%s']"%(edge.get('target'), nodeNamePropName), namespaces).text
+
+        if(prefix is not ''):
+            transition['id'] = "%s_%s"%(prefix, transition['id'])
+
         transitions.append(transition)
 
     # sort transitions by name
@@ -293,6 +317,51 @@ def generateActivitiesFragment(states):
 
     return ",".join(fragments)
 
+def writeTargetFile(args, states, transitions, firstState):
+    templateValues = {
+        'namespace'           : string.capwords(args.namespace, '\\'),
+        'workflowClass'       : ("%s_wfl_base"%args.familyName).capitalize(),
+        'firstState'          : firstState,
+        'stateConstants'      : generateConstantsFragment(states),
+        'transitionConstants' : generateConstantsFragment(transitions),
+        'transitions'         : generateTransitionsFragment(transitions),
+        'cycle'               : generateCycleFragment(transitions),
+        'abstractMethods'     : generateMethodFragment(transitions),
+        'activities'          : generateActivitiesFragment(states),
+        'prefix'              : args.prefix if (args.prefix is not '') else '%s_wfl'%args.familyName.lower()
+    }
+
+    template = Template(open(args.tplFile).read())
+    targetString = template.safe_substitute(templateValues)
+    #FIXME: tricky hack for python 2 and 3 compatibility
+    if sys.version_info < (2, 8):
+        targetString = targetString.encode('utf-8')
+    targetFile = open(args.targetFile, 'w')
+    targetFile.write(targetString)
+    targetFile.close()
+
+def writeLocalesTargetFile(args, states, transitions):
+    fragmentTplStr = """
+    // _COMMENT: $name : $desc
+    $i18n = _("$id");"""
+
+    fragmentTpl = Template(fragmentTplStr)
+
+    fragments = ["<?php"]
+    for entry in states:
+        fragments.append(fragmentTpl.safe_substitute(entry))
+    for entry in transitions:
+        fragments.append(fragmentTpl.safe_substitute(entry))
+
+    locales = "".join(fragments)
+
+    #FIXME: tricky hack for python 2 and 3 compatibility
+    if sys.version_info < (2, 8):
+        locales = locales.encode('utf-8')
+    targetFile = open(args.localesTargetFile, 'w')
+    targetFile.write(locales)
+    targetFile.close()
+
 def main():
     args = parseOptions()
 
@@ -305,30 +374,15 @@ def main():
     ET.register_namespace("y", "http://www.yworks.com/xml/graphml")
     tree = ET.parse(args.graphmlFile)
 
-    states = getStates(tree, namespaces)
-    transitions = getTransitions(tree, namespaces)
+    states = getStates(tree, namespaces, args.prefix)
+    transitions = getTransitions(tree, namespaces, args.prefix)
     firstStateName = getFirstStateName(tree, namespaces)
 
-    templateValues = {
-        'namespace'           : string.capwords(args.namespace, '\\'),
-        'workflowClass'       : ("%s_wfl_base"%args.familyName).capitalize(),
-        'firstState'          : firstStateName,
-        'stateConstants'      : generateConstantsFragment(states),
-        'transitionConstants' : generateConstantsFragment(transitions),
-        'transitions'         : generateTransitionsFragment(transitions),
-        'cycle'               : generateCycleFragment(transitions),
-        'abstractMethods'     : generateMethodFragment(transitions),
-        'activities'          : generateActivitiesFragment(states)
-    }
+    if(args.targetFile is not None):
+        writeTargetFile(args, states, transitions, firstStateName)
 
-    template = Template(open(args.tplFile).read())
-    targetString = template.safe_substitute(templateValues)
-    #FIXME: tricky hack for python 2 and 3 compatibility
-    if sys.version_info < (2, 8):
-        targetString = targetString.encode('utf-8')
-    targetFile = open(args.targetFile, 'w')
-    targetFile.write(targetString)
-    targetFile.close()
+    if(args.localesTargetFile is not None):
+        writeLocalesTargetFile(args, states, transitions)
 
 if __name__ == "__main__":
     main()

@@ -11,6 +11,8 @@ abstract class $workflowClass extends \Dcp\Family\WDoc
     //endregion
 
     //region structure
+    public $$attrPrefix = "$prefix";
+
     public $$firstState = self::$firstState;
 
     public $$transitions = Array($transitions
