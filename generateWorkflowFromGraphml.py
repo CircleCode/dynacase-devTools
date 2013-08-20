@@ -308,7 +308,7 @@ def generateActivitiesFragment(states):
     fragments = []
 
     activityFragment =  """
-            self::$name => '$activity'"""
+            self::$name => '${id}_activity'"""
     activityFragmentTpl = Template(activityFragment)
 
     for state in states:
@@ -341,17 +341,28 @@ def writeTargetFile(args, states, transitions, firstState):
     targetFile.close()
 
 def writeLocalesTargetFile(args, states, transitions):
-    fragmentTplStr = """
-    // _COMMENT: $name : $desc
+    stateFragmentTplStr = """
+    // _COMMENT: (state) $name : $desc
     $i18n = _("$id");"""
+    stateFragmentTpl = Template(stateFragmentTplStr)
 
-    fragmentTpl = Template(fragmentTplStr)
+    activityFragmentTplStr = """
+    // _COMMENT: (activity) $name : $activity
+    $i18n = _("${id}_activity");"""
+    activityFragmentTpl = Template(activityFragmentTplStr)
+
+    transitionFragmentTplStr = """
+    // _COMMENT: (transition) $name : $desc
+    $i18n = _("$id");"""
+    transitionFragmentTpl = Template(transitionFragmentTplStr)
 
     fragments = ["<?php"]
-    for entry in states:
-        fragments.append(fragmentTpl.safe_substitute(entry))
-    for entry in transitions:
-        fragments.append(fragmentTpl.safe_substitute(entry))
+    for state in states:
+        fragments.append(stateFragmentTpl.safe_substitute(state))
+        if('activity' in state):
+            fragments.append(activityFragmentTpl.safe_substitute(state))
+    for transition in transitions:
+        fragments.append(transitionFragmentTpl.safe_substitute(transition))
 
     locales = "".join(fragments)
 
