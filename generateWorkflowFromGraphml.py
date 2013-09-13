@@ -254,7 +254,7 @@ def generateMethodFragment(transitions):
      * $stage for $name ($desc)
      *    from $e1 to $e2
      */
-    public abstract function $method($$nextStep, $$currentStep, $$confirmationMessage);"""
+    public abstract function $method($$nextStep, $$currentStep, $$confirmationMessage='');"""
     preTpl = Template(fragmentTplStr)
 
     fragmentTplStr = """
@@ -262,7 +262,7 @@ def generateMethodFragment(transitions):
      * $stage for $name ($desc)
      *    from $e1 to $e2
      */
-    public abstract function $method($$currentStep, $$previousStep, $$confirmationMessage);"""
+    public abstract function $method($$currentStep, $$previousStep, $$confirmationMessage='');"""
     postTpl = Template(fragmentTplStr)
 
     for transition in transitions:
